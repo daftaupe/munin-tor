@@ -1,0 +1,6 @@
+# cache / bytecode
+__pycache__/
+*.py[cod]
+
+# virtualenv
+env
