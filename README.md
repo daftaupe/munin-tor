@@ -9,3 +9,6 @@ Requires the stem library (https://stem.torproject.org/).
 #### tor_connections
 ![alt tor_connections](https://i.imgur.com/LAkcKD0.png)
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_connections`
+
+#### tor_traffic
+`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_traffic`

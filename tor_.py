@@ -97,6 +97,32 @@ class TorConnections(TorPlugin):
                 print('{}.value {}'.format(state.lower(), count))
 
 
+class TorTraffic(TorPlugin):	
+	def __init__(self):
+		pass
+
+	def conf(self):
+		graph = {'title': 'Traffic',
+			 'args': '-l 0 --base 1024',
+			 'vlabel': 'data',
+			'category': 'Tor',
+			'info': 'bytes read/written'}
+		labels = {'read': {'label': 'read', 'min':0},
+			  'written': {'label': 'written', 'min':0}}
+
+		TorPlugin.conf_from_dict(graph, labels)
+
+
+	def fetch(self):
+		with Controller.from_port(port=9051) as controller:
+			controller.authenticate()
+			response = controller.get_info('traffic/read')
+			print('read.value {}'.format(response))
+			response = controller.get_info('traffic/written')
+			print('written.value {}'.format(response))
+
+
+
 if __name__ == '__main__':
     param = None
     if len(sys.argv) > 1:
@@ -115,6 +141,8 @@ if __name__ == '__main__':
         provider = None
         if __main__.__file__.endswith('_connections'):
             provider = TorConnections()
+	elif __main__.__file__.endswith('_traffic'):
+		provider = TorTraffic()
         else:
             print('Unknown plugin name, try "suggest" for a list of possible ones.')
             sys.exit(0)
