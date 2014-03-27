@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+from __future__ import print_function
 import sys
 try:
 	import stem
@@ -89,7 +90,8 @@ class TorConnections(TorPlugin):
 
 				response = controller.get_info('orconn-status', None)
 				if response == None:
-					print("No response from Tor Daemon in TorConnection.fetch()")
+					print("No response from Tor Daemon in TorConnection.fetch()", file=sys.stderr)
+					sys.exit(-1)
 				else:
 					connections = response.split('\n')
 					states = dict((state, 0) for state in stem.ORStatus)
@@ -120,10 +122,17 @@ class TorTraffic(TorPlugin):
 			try:
 				controller.authenticate()
 
-				response = controller.get_info('traffic/read')
+				response = controller.get_info('traffic/read', None)
+				if response == None:
+					print("Error while reading traffic/read from Tor Deamon", file=sys.stderr)
+					sys.exit(-1)
+
 				print('read.value {}'.format(response))
 
-				response = controller.get_info('traffic/written')
+				response = controller.get_info('traffic/written', None)
+				if response == None:
+					print("Error while reading traffic/write from Tor Deamon", file=sys.stderr)
+					sys.exit(-1)
 				print('written.value {}'.format(response))
 			except stem.connection.AuthenticationFailure:
 				print('Authentcation failed ({})'.format(e))
