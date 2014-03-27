@@ -1,6 +1,7 @@
 #!/usr/bin/python2
 import sys
 try:
+	import stem
 	from stem.control import Controller
 except ImportError:
 	print('no (tor-munin requires the stem library from https://stem.torproject.org.)')
@@ -86,9 +87,16 @@ class TorConnections(TorPlugin):
 			try:
 				controller.authenticate()
 
-				states = dict((state, 0) for state in stem.ORStatus)
-				for state, count in states.iteritems():
-					print('{}.value {}'.format(state.lower(), count))
+				response = controller.get_info('orconn-status', None)
+				if response == None:
+					print("No response from Tor Daemon in TorConnection.fetch()")
+				else:
+					connections = response.split('\n')
+					states = dict((state, 0) for state in stem.ORStatus)
+					for connection in connections:
+						states[connection.rsplit(None, 1)[-1]] += 1
+					for state, count in states.iteritems():
+						print('{}.value {}'.format(state.lower(), count))
 			except stem.connection.AuthenticationFailure as e:
 				print('Authencation failed ({})'.format(e))
 
