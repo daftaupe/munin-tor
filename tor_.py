@@ -1,7 +1,5 @@
 #!/usr/bin/python2
 import sys
-import __main__
-
 try:
 	from stem.control import Controller
 except ImportError:
@@ -17,7 +15,6 @@ port = 9051
 
 #%# family=auto
 #%# capabilities=autoconf suggest
-
 
 #########################
 # Base Class
@@ -44,12 +41,12 @@ class TorPlugin:
 	def autoconf():
 		try:
 			with Controller.from_port(port=port) as controller:
-				controller.authenticate()
-				if controller.is_authenticated():
+				try:
+					controller.authenticate()
 					print('yes')
-				else:
-					print('no (Authentication failed)')
-		except:
+				except stem.connection.AuthenticationFailure as e:
+					print('no (Authentication failed: {})'.format(e))
+		except stem.connection:
 			print('no (Connection failed)')
 
 	@staticmethod
@@ -71,7 +68,7 @@ class TorConnections(TorPlugin):
 		pass
 
 	def conf(self):
-		graph = {'title': 'Tor Connections',
+		graph = {'title': 'Connections',
 				 'args': '-l 0 --base 1000',
 				 'vlabel': 'connections',
 				 'category': 'Tor',
@@ -86,17 +83,14 @@ class TorConnections(TorPlugin):
 
 	def fetch(self):
 		with Controller.from_port(port=port) as controller:
-			controller.authenticate()
+			try:
+				controller.authenticate()
 
-			response = controller.get_info('orconn-status')
-			connections = response.split('\n')
-
-			states = {'NEW': 0, 'LAUNCHED': 0, 'CONNECTED': 0, 'FAILED': 0, 'CLOSED': 0}
-			for connection in connections:
-				states[connection.rsplit(None, 1)[-1]] += 1
-			for state, count in states.iteritems():
-				print('{}.value {}'.format(state.lower(), count))
-
+				states = dict((state, 0) for state in stem.ORStatus)
+				for state, count in states.iteritems():
+					print('{}.value {}'.format(state.lower(), count))
+			except stem.connection.AuthenticationFailure as e:
+				print('Authencation failed ({})'.format(e))
 
 class TorTraffic(TorPlugin):
 	def __init__(self):
@@ -115,11 +109,16 @@ class TorTraffic(TorPlugin):
 
 	def fetch(self):
 		with Controller.from_port(port=port) as controller:
-			controller.authenticate()
-			response = controller.get_info('traffic/read')
-			print('read.value {}'.format(response))
-			response = controller.get_info('traffic/written')
-			print('written.value {}'.format(response))
+			try:
+				controller.authenticate()
+
+				response = controller.get_info('traffic/read')
+				print('read.value {}'.format(response))
+
+				response = controller.get_info('traffic/written')
+				print('written.value {}'.format(response))
+			except stem.connection.AuthenticationFailure:
+				print('Authentcation failed ({})'.format(e))
 
 
 if __name__ == '__main__':
@@ -138,9 +137,9 @@ if __name__ == '__main__':
 	else:
 		# detect data provider
 		provider = None
-		if __main__.__file__.endswith('_connections'):
+		if __file__.endswith('_connections'):
 			provider = TorConnections()
-		elif __main__.__file__.endswith('_traffic'):
+		elif __file__.endswith('_traffic'):
 			provider = TorTraffic()
 		else:
 			print('Unknown plugin name, try "suggest" for a list of possible ones.')
