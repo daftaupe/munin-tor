@@ -11,4 +11,5 @@ Requires the stem library (https://stem.torproject.org/).
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_connections`
 
 #### tor_traffic
+![alt tor_traffic](https://i.imgur.com/YXLZHGa.png)
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_traffic`
