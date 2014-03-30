@@ -12,13 +12,10 @@ Requires the stem library (https://stem.torproject.org/).
 
 #### tor_traffic
 ![alt tor_traffic](https://i.imgur.com/YXLZHGa.png)
-`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_traffic
+`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_traffic`
 
 
 #### Adding new graphs
-3.9 GETINFO - https://gitweb.torproject.org/torspec.git/blob/HEAD:/control-spec.txt
+You can query infos from the tor daemon via its GETINFO¹ command. The get_info.py script helps you to look up the return values/format quickly, to see if the desired information can be efficiently extracted.
 
-You can use get_info.py to lookup keys.
-
-
-`
+[1] 3.9 GETINFO - https://gitweb.torproject.org/torspec.git/blob/HEAD:/control-spec.txt
