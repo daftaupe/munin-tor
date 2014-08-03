@@ -135,7 +135,7 @@ class TorTraffic(TorPlugin):
                     print("Error while reading traffic/write from Tor Deamon", file=sys.stderr)
                     sys.exit(-1)
                 print('written.value {}'.format(response))
-            except stem.connection.AuthenticationFailure:
+            except stem.connection.AuthenticationFailure as e:
                 print('Authentcation failed ({})'.format(e))
 
 
