@@ -22,6 +22,7 @@ port = 9051
 # Base Class
 #########################
 
+
 class TorPlugin:
     def __init__(self):
         raise NotImplementedError
@@ -89,7 +90,7 @@ class TorConnections(TorPlugin):
                 controller.authenticate()
 
                 response = controller.get_info('orconn-status', None)
-                if response == None:
+                if response is None:
                     print("No response from Tor Daemon in TorConnection.fetch()", file=sys.stderr)
                     sys.exit(-1)
                 else:
@@ -101,6 +102,7 @@ class TorConnections(TorPlugin):
                         print('{}.value {}'.format(state.lower(), count))
             except stem.connection.AuthenticationFailure as e:
                 print('Authencation failed ({})'.format(e))
+
 
 class TorTraffic(TorPlugin):
     def __init__(self):
@@ -124,14 +126,14 @@ class TorTraffic(TorPlugin):
                 controller.authenticate()
 
                 response = controller.get_info('traffic/read', None)
-                if response == None:
+                if response is None:
                     print("Error while reading traffic/read from Tor Deamon", file=sys.stderr)
                     sys.exit(-1)
 
                 print('read.value {}'.format(response))
 
                 response = controller.get_info('traffic/written', None)
-                if response == None:
+                if response is None:
                     print("Error while reading traffic/write from Tor Deamon", file=sys.stderr)
                     sys.exit(-1)
                 print('written.value {}'.format(response))
