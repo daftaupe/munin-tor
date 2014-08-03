@@ -23,7 +23,7 @@ port = 9051
 #########################
 
 
-class TorPlugin:
+class TorPlugin(object):
     def __init__(self):
         raise NotImplementedError
 
