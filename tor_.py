@@ -1,12 +1,14 @@
 #!/usr/bin/python2
+
 from __future__ import print_function
+import os
 import sys
 try:
     import stem
     from stem.control import Controller
 except ImportError:
     print('no (tor-munin requires the stem library from https://stem.torproject.org.)')
-    sys.exit(0)
+    sys.exit()
 
 # configuration
 port = 9051
@@ -17,6 +19,34 @@ port = 9051
 
 #%# family=auto
 #%# capabilities=autoconf suggest
+
+
+class ConnectionError(Exception):
+    """Error connecting to the controller"""
+
+
+class AuthError(Exception):
+    """Error authenticating to the controller"""
+
+
+def authenticate(controller):
+    try:
+        controller.authenticate()
+        return
+    except stem.connection.MissingPassword:
+        pass
+
+    try:
+        password = os.environ['torpassword']
+    except KeyError:
+        raise AuthError("Please configure the 'torpassword' "
+                        "environment variable")
+
+    try:
+        controller.authenticate(password=password)
+    except stem.connection.PasswordAuthFailed:
+        print("Authentication failed (incorrect password)")
+
 
 #########################
 # Base Class
@@ -45,10 +75,11 @@ class TorPlugin(object):
         try:
             with Controller.from_port(port=port) as controller:
                 try:
-                    controller.authenticate()
+                    authenticate(controller)
                     print('yes')
                 except stem.connection.AuthenticationFailure as e:
                     print('no (Authentication failed: {})'.format(e))
+
         except stem.connection:
             print('no (Connection failed)')
 
@@ -87,7 +118,7 @@ class TorConnections(TorPlugin):
     def fetch(self):
         with Controller.from_port(port=port) as controller:
             try:
-                controller.authenticate()
+                authenticate(controller)
 
                 response = controller.get_info('orconn-status', None)
                 if response is None:
@@ -123,22 +154,23 @@ class TorTraffic(TorPlugin):
     def fetch(self):
         with Controller.from_port(port=port) as controller:
             try:
-                controller.authenticate()
-
-                response = controller.get_info('traffic/read', None)
-                if response is None:
-                    print("Error while reading traffic/read from Tor Deamon", file=sys.stderr)
-                    sys.exit(-1)
-
-                print('read.value {}'.format(response))
-
-                response = controller.get_info('traffic/written', None)
-                if response is None:
-                    print("Error while reading traffic/write from Tor Deamon", file=sys.stderr)
-                    sys.exit(-1)
-                print('written.value {}'.format(response))
+                authenticate(controller)
             except stem.connection.AuthenticationFailure as e:
-                print('Authentcation failed ({})'.format(e))
+                print('Authentication failed ({})'.format(e))
+                return
+
+            response = controller.get_info('traffic/read', None)
+            if response is None:
+                print("Error while reading traffic/read from Tor Deamon", file=sys.stderr)
+                sys.exit(-1)
+
+            print('read.value {}'.format(response))
+
+            response = controller.get_info('traffic/written', None)
+            if response is None:
+                print("Error while reading traffic/write from Tor Deamon", file=sys.stderr)
+                sys.exit(-1)
+            print('written.value {}'.format(response))
 
 
 def main():
@@ -150,10 +182,10 @@ def main():
 
     if param == 'autoconf':
         TorPlugin.autoconf()
-        sys.exit(0)
+        sys.exit()
     elif param == 'suggest':
         TorPlugin.suggest()
-        sys.exit(0)
+        sys.exit()
     else:
         # detect data provider
         provider = None
@@ -163,7 +195,7 @@ def main():
             provider = TorTraffic()
         else:
             print('Unknown plugin name, try "suggest" for a list of possible ones.')
-            sys.exit(0)
+            sys.exit()
 
         if param == 'config':
             provider.conf()
