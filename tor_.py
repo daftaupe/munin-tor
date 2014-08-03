@@ -141,7 +141,7 @@ class TorTraffic(TorPlugin):
                 print('Authentcation failed ({})'.format(e))
 
 
-if __name__ == '__main__':
+def main():
     param = None
     if len(sys.argv) > 1:
         param = sys.argv[1].lower()
@@ -171,3 +171,6 @@ if __name__ == '__main__':
             provider.fetch()
         else:
             print('Unknown parameter "{}"'.format(param))
+
+if __name__ == '__main__':
+    main()
