@@ -3,12 +3,15 @@
 from __future__ import print_function
 import os
 import sys
+
 try:
     import stem
     from stem.control import Controller
 except ImportError:
     print('no (tor-munin requires the stem library from https://stem.torproject.org.)')
     sys.exit()
+
+import circuits_by_country
 
 # configuration
 port = 9051
@@ -86,6 +89,10 @@ class TorPlugin(object):
     @staticmethod
     def suggest():
         options = ['connections', 'traffic']
+        tc = circuits_by_country.TorCountries(port)
+        if tc.available:
+            options.append('countries')
+
         for option in options:
             print(option)
 
@@ -193,6 +200,8 @@ def main():
             provider = TorConnections()
         elif __file__.endswith('_traffic'):
             provider = TorTraffic()
+        elif __file__.endswith('_countries'):
+            provider = circuits_by_country.TorCountries(port)
         else:
             print('Unknown plugin name, try "suggest" for a list of possible ones.')
             sys.exit()
