@@ -138,6 +138,32 @@ class TorTraffic(TorPlugin):
 			except stem.connection.AuthenticationFailure:
 				print('Authentcation failed ({})'.format(e))
 
+class TorDormant(TorPlugin):
+	def __init__(self):
+		pass
+
+	def conf(self):
+		graph = {'title': 'Dormant',
+				 'args': '-l 0 --base 1000',
+				 'vlabel': 'dormant',
+				 'category': 'Tor',
+				 'info': 'Is Tor not building circuits because it is idle?'}
+		labels = {'dormant': {'label': 'dormant', 'min': 0, 'max': 1, 'type': 'GAUGE'}}
+
+		TorPlugin.conf_from_dict(graph, labels)
+
+	def fetch(self):
+		with Controller.from_port(port=port) as controller:
+			try:
+				controller.authenticate()
+
+				response = controller.get_info('dormant', None)
+				if response == None:
+					print("Error while reading dormant state from Tor Deamon", file=sys.stderr)
+					sys.exit(-1)
+				print('dormant.value {}'.format(response))
+			except stem.connection.AuthenticationFailure as e:
+				print('Authencation failed ({})'.format(e))
 
 if __name__ == '__main__':
 	param = None
@@ -159,6 +185,8 @@ if __name__ == '__main__':
 			provider = TorConnections()
 		elif __file__.endswith('_traffic'):
 			provider = TorTraffic()
+		elif __file__.endswith('_dormant'):
+			provider = TorDormant()
 		else:
 			print('Unknown plugin name, try "suggest" for a list of possible ones.')
 			sys.exit(0)
