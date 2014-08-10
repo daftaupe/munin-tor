@@ -111,6 +111,9 @@ class TorCountries(TorPlugin):
         """Generate a sequence of countries for every built circuit"""
         for ipaddr in self._gen_ipaddrs_from_statuses(controller):
             country = self.geodb.country_name_by_addr(ipaddr)
+            if country is None:
+                yield 'Unknown'
+
             yield simplify(country)
 
     def top_countries(self):
