@@ -113,6 +113,7 @@ class TorCountries(TorPlugin):
             country = self.geodb.country_name_by_addr(ipaddr)
             if country is None:
                 yield 'Unknown'
+                continue
 
             yield simplify(country)
 
