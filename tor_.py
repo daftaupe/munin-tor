@@ -139,7 +139,7 @@ class TorConnections(TorPlugin):
                     for state, count in states.iteritems():
                         print('{}.value {}'.format(state.lower(), count))
             except stem.connection.AuthenticationFailure as e:
-                print('Authencation failed ({})'.format(e))
+                print('Authentication failed ({})'.format(e))
 
 
 class TorDormant(TorPlugin):
@@ -167,7 +167,7 @@ class TorDormant(TorPlugin):
                     sys.exit(-1)
                 print('dormant.value {}'.format(response))
             except stem.connection.AuthenticationFailure as e:
-                print('Authencation failed ({})'.format(e))
+                print('Authentication failed ({})'.format(e))
 
 
 class TorTraffic(TorPlugin):
