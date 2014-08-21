@@ -125,5 +125,5 @@ class TorCountries(TorPlugin):
                 c = Counter(self._gen_countries(controller))
                 return sorted(c.most_common(self.max_countries))
             except stem.connection.AuthenticationFailure as e:
-                print('Authencation failed ({})'.format(e))
+                print('Authentication failed ({})'.format(e))
                 return []

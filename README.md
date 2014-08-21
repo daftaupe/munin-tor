@@ -7,12 +7,18 @@ Requires the stem library (https://stem.torproject.org/).
 
 
 #### tor_connections
-![alt tor_connections](https://i.imgur.com/LAkcKD0.png)
+![alt tor_connections](https://i.imgur.com/LAkcKD0.png)  
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_connections`
 
 #### tor_traffic
-![alt tor_traffic](https://i.imgur.com/YXLZHGa.png)
+![alt tor_traffic](https://i.imgur.com/YXLZHGa.png)  
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_traffic`
+
+#### tor_dormant
+`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_dormant`
+
+#### tor_countries
+`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_countries`
 
 #### Using password authentication
 
