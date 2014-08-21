@@ -15,9 +15,11 @@ Requires the stem library (https://stem.torproject.org/).
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_traffic`
 
 #### tor_dormant
+![alt tor_dormant](http://i.imgur.com/UCQr6MX.png)  
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_dormant`
 
 #### tor_countries
+![alt tor_countries](http://i.imgur.com/6bVsHrN.png)  
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_countries`
 
 #### Using password authentication
@@ -33,7 +35,7 @@ Add the hashed password to /etc/tor/torrc and reload Tor:
 Create /etc/munin/plugin-conf.d/tor_
 
     [tor_*]
-      env.torpassword MyVeryStrongPassword
+    env.torpassword MyVeryStrongPassword
 
 
 
