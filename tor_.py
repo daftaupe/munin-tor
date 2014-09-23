@@ -13,9 +13,6 @@ except ImportError:
 
 import circuits_by_country
 
-# configuration
-port = 9051
-
 '''
  Here be dragons
 '''
@@ -50,6 +47,29 @@ def authenticate(controller):
     except stem.connection.PasswordAuthFailed:
         print("Authentication failed (incorrect password)")
 
+def gen_controller():
+    try:
+        connect_method = os.environ['connectmethod']
+    except KeyError:
+        connect_method = 'port'
+
+    if connect_method == 'port':
+        try:
+            port = os.environ['port']
+        except KeyError:
+            port = 9051
+
+        return Controller.from_port(port=port)
+    elif connect_method == 'socket':
+        try:
+            socket = os.environ['socket']
+        except KeyError:
+            socket = '/var/run/tor/control'
+
+        return Controller.from_socket_file(path=socket)
+    else:
+        raise ValueError("env.connectmethod contains in invalid value. Please specify either 'port' or 'socket'.")
+
 
 #########################
 # Base Class
@@ -76,7 +96,7 @@ class TorPlugin(object):
     @staticmethod
     def autoconf():
         try:
-            with Controller.from_port(port=port) as controller:
+            with gen_controller() as controller:
                 try:
                     authenticate(controller)
                     print('yes')
@@ -89,7 +109,7 @@ class TorPlugin(object):
     @staticmethod
     def suggest():
         options = ['connections', 'traffic']
-        tc = circuits_by_country.TorCountries(port)
+        tc = circuits_by_country.TorCountries()
         if tc.available:
             options.append('countries')
 
@@ -123,7 +143,7 @@ class TorConnections(TorPlugin):
         TorPlugin.conf_from_dict(graph, labels)
 
     def fetch(self):
-        with Controller.from_port(port=port) as controller:
+        with gen_controller() as controller:
             try:
                 authenticate(controller)
 
@@ -157,7 +177,7 @@ class TorDormant(TorPlugin):
         TorPlugin.conf_from_dict(graph, labels)
 
     def fetch(self):
-        with Controller.from_port(port=port) as controller:
+        with gen_controller() as controller:
             try:
                 controller.authenticate()
 
@@ -187,7 +207,7 @@ class TorTraffic(TorPlugin):
         TorPlugin.conf_from_dict(graph, labels)
 
     def fetch(self):
-        with Controller.from_port(port=port) as controller:
+        with gen_controller() as controller:
             try:
                 authenticate(controller)
             except stem.connection.AuthenticationFailure as e:
@@ -231,7 +251,7 @@ def main():
         elif __file__.endswith('_traffic'):
             provider = TorTraffic()
         elif __file__.endswith('_countries'):
-            provider = circuits_by_country.TorCountries(port)
+            provider = circuits_by_country.TorCountries()
         else:
             print('Unknown plugin name, try "suggest" for a list of possible ones.')
             sys.exit()

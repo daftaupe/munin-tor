@@ -7,7 +7,7 @@ from stem import CircStatus
 from stem.control import Controller
 import stem
 
-from tor_ import TorPlugin, authenticate
+from tor_ import TorPlugin, authenticate, gen_controller
 
 DEFAULT_GEOIP_PATH = "/usr/share/GeoIP/GeoIP.dat"
 CACHE_FNAME = 'munin_tor_country_stats.json'
@@ -22,9 +22,7 @@ def simplify(cn):
 
 
 class TorCountries(TorPlugin):
-    def __init__(self, port):
-        self.port = port
-
+    def __init__(self):
         # Configure plugin
         self.cache_dir_name = os.environ.get('torcachedir', None)
         if self.cache_dir_name is not None:
@@ -119,7 +117,7 @@ class TorCountries(TorPlugin):
 
     def top_countries(self):
         """Build a list of top countries by number of circuits"""
-        with Controller.from_port(port=self.port) as controller:
+        with gen_controller() as controller:
             try:
                 authenticate(controller)
                 c = Counter(self._gen_countries(controller))
