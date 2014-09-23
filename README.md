@@ -5,6 +5,8 @@ Munin plugin to render various values taken from the a tor daemon.
 
 Requires the stem library (https://stem.torproject.org/).
 
+Resolve dependencies for example by using pip:
+`pip install -r requirements.txt`
 
 #### tor_connections
 ![alt tor_connections](https://i.imgur.com/LAkcKD0.png)  
