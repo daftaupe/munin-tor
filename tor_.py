@@ -97,7 +97,7 @@ class TorPlugin(object):
 
     @staticmethod
     def suggest():
-        options = ['connections', 'traffic']
+        options = ['connections', 'traffic', 'dormant']
         tc = circuits_by_country.TorCountries()
         if tc.available:
             options.append('countries')
@@ -217,7 +217,6 @@ class TorTraffic(TorPlugin):
 
 
 def main():
-    param = None
     if len(sys.argv) > 1:
         param = sys.argv[1].lower()
     else:
@@ -231,7 +230,6 @@ def main():
         sys.exit()
     else:
         # detect data provider
-        provider = None
         if __file__.endswith('_connections'):
             provider = TorConnections()
         elif __file__.endswith('_dormant'):
