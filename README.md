@@ -39,6 +39,15 @@ Create /etc/munin/plugin-conf.d/tor_
     [tor_*]
     env.torpassword MyVeryStrongPassword
 
+#### Configuring the connection to Tor
+
+By default, the plugin connects to Tor using TCP on port 9051. This can be
+changed by setting env.port.
+
+The plugin can also connect using a socket file. This is done by setting
+env.connectmethod to 'socket'. The default path for the socket file is
+/var/run/tor/control, but it can be changed using env.socket.
+
 
 
 #### Adding new graphs

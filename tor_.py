@@ -68,7 +68,8 @@ def gen_controller():
 
         return Controller.from_socket_file(path=socket)
     else:
-        raise ValueError("env.connectmethod contains in invalid value. Please specify either 'port' or 'socket'.")
+        print("env.connectmethod contains in invalid value. Please specify either 'port' or 'socket'.", file=sys.stderr)
+        sys.exit(-1)
 
 
 #########################
