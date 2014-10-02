@@ -13,9 +13,6 @@ except ImportError:
 
 import circuits_by_country
 
-# configuration
-port = 9051
-
 '''
  Here be dragons
 '''
@@ -50,6 +47,30 @@ def authenticate(controller):
     except stem.connection.PasswordAuthFailed:
         print("Authentication failed (incorrect password)")
 
+def gen_controller():
+    try:
+        connect_method = os.environ['connectmethod']
+    except KeyError:
+        connect_method = 'port'
+
+    if connect_method == 'port':
+        try:
+            port = os.environ['port']
+        except KeyError:
+            port = 9051
+
+        return Controller.from_port(port=port)
+    elif connect_method == 'socket':
+        try:
+            socket = os.environ['socket']
+        except KeyError:
+            socket = '/var/run/tor/control'
+
+        return Controller.from_socket_file(path=socket)
+    else:
+        print("env.connectmethod contains in invalid value. Please specify either 'port' or 'socket'.", file=sys.stderr)
+        sys.exit(-1)
+
 
 #########################
 # Base Class
@@ -76,7 +97,7 @@ class TorPlugin(object):
     @staticmethod
     def autoconf():
         try:
-            with Controller.from_port(port=port) as controller:
+            with gen_controller() as controller:
                 try:
                     authenticate(controller)
                     print('yes')
@@ -89,7 +110,7 @@ class TorPlugin(object):
     @staticmethod
     def suggest():
         options = ['connections', 'traffic']
-        tc = circuits_by_country.TorCountries(port)
+        tc = circuits_by_country.TorCountries()
         if tc.available:
             options.append('countries')
 
@@ -123,13 +144,13 @@ class TorConnections(TorPlugin):
         TorPlugin.conf_from_dict(graph, labels)
 
     def fetch(self):
-        with Controller.from_port(port=port) as controller:
+        with gen_controller() as controller:
             try:
                 authenticate(controller)
 
                 response = controller.get_info('orconn-status', None)
                 if response is None:
-                    print("No response from Tor Daemon in TorConnection.fetch()", file=sys.stderr)
+                    print("No response from Tor daemon in TorConnection.fetch()", file=sys.stderr)
                     sys.exit(-1)
                 else:
                     connections = response.split('\n')
@@ -157,13 +178,13 @@ class TorDormant(TorPlugin):
         TorPlugin.conf_from_dict(graph, labels)
 
     def fetch(self):
-        with Controller.from_port(port=port) as controller:
+        with gen_controller() as controller:
             try:
                 controller.authenticate()
 
                 response = controller.get_info('dormant', None)
                 if response is None:
-                    print("Error while reading dormant state from Tor Deamon", file=sys.stderr)
+                    print("Error while reading dormant state from Tor daemon", file=sys.stderr)
                     sys.exit(-1)
                 print('dormant.value {}'.format(response))
             except stem.connection.AuthenticationFailure as e:
@@ -179,7 +200,6 @@ class TorTraffic(TorPlugin):
                  'args': '-l 0 --base 1024',
                  'vlabel': 'data',
                  'category': 'Tor',
-                 'type': 'COUNTER',
                  'info': 'bytes read/written'}
         labels = {'read': {'label': 'read', 'min': 0, 'type': 'COUNTER'},
                   'written': {'label': 'written', 'min': 0, 'type': 'COUNTER'}}
@@ -187,7 +207,7 @@ class TorTraffic(TorPlugin):
         TorPlugin.conf_from_dict(graph, labels)
 
     def fetch(self):
-        with Controller.from_port(port=port) as controller:
+        with gen_controller() as controller:
             try:
                 authenticate(controller)
             except stem.connection.AuthenticationFailure as e:
@@ -196,14 +216,14 @@ class TorTraffic(TorPlugin):
 
             response = controller.get_info('traffic/read', None)
             if response is None:
-                print("Error while reading traffic/read from Tor Deamon", file=sys.stderr)
+                print("Error while reading traffic/read from Tor daemon", file=sys.stderr)
                 sys.exit(-1)
 
             print('read.value {}'.format(response))
 
             response = controller.get_info('traffic/written', None)
             if response is None:
-                print("Error while reading traffic/write from Tor Deamon", file=sys.stderr)
+                print("Error while reading traffic/write from Tor daemon", file=sys.stderr)
                 sys.exit(-1)
             print('written.value {}'.format(response))
 
@@ -231,7 +251,7 @@ def main():
         elif __file__.endswith('_traffic'):
             provider = TorTraffic()
         elif __file__.endswith('_countries'):
-            provider = circuits_by_country.TorCountries(port)
+            provider = circuits_by_country.TorCountries()
         else:
             print('Unknown plugin name, try "suggest" for a list of possible ones.')
             sys.exit()
