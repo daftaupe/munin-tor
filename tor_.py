@@ -47,28 +47,16 @@ def authenticate(controller):
     except stem.connection.PasswordAuthFailed:
         print("Authentication failed (incorrect password)")
 
+
 def gen_controller():
-    try:
-        connect_method = os.environ['connectmethod']
-    except KeyError:
-        connect_method = 'port'
+    connect_method = os.environ.get('connectmethod', 'port')
 
     if connect_method == 'port':
-        try:
-            port = os.environ['port']
-        except KeyError:
-            port = 9051
-
-        return Controller.from_port(port=port)
+        return Controller.from_port(port=os.environ.get('port', 9051))
     elif connect_method == 'socket':
-        try:
-            socket = os.environ['socket']
-        except KeyError:
-            socket = '/var/run/tor/control'
-
-        return Controller.from_socket_file(path=socket)
+        return Controller.from_socket_file(path=os.environ.get('socket', '/var/run/tor/control'))
     else:
-        print("env.connectmethod contains in invalid value. Please specify either 'port' or 'socket'.", file=sys.stderr)
+        print("env.connectmethod contains an invalid value. Please specify either 'port' or 'socket'.", file=sys.stderr)
         sys.exit(-1)
 
 
