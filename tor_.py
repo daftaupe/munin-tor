@@ -200,7 +200,6 @@ class TorTraffic(TorPlugin):
                  'args': '-l 0 --base 1024',
                  'vlabel': 'data',
                  'category': 'Tor',
-                 'type': 'COUNTER',
                  'info': 'bytes read/written'}
         labels = {'read': {'label': 'read', 'min': 0, 'type': 'COUNTER'},
                   'written': {'label': 'written', 'min': 0, 'type': 'COUNTER'}}
