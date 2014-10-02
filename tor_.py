@@ -150,7 +150,7 @@ class TorConnections(TorPlugin):
 
                 response = controller.get_info('orconn-status', None)
                 if response is None:
-                    print("No response from Tor Daemon in TorConnection.fetch()", file=sys.stderr)
+                    print("No response from Tor daemon in TorConnection.fetch()", file=sys.stderr)
                     sys.exit(-1)
                 else:
                     connections = response.split('\n')
@@ -184,7 +184,7 @@ class TorDormant(TorPlugin):
 
                 response = controller.get_info('dormant', None)
                 if response is None:
-                    print("Error while reading dormant state from Tor Deamon", file=sys.stderr)
+                    print("Error while reading dormant state from Tor daemon", file=sys.stderr)
                     sys.exit(-1)
                 print('dormant.value {}'.format(response))
             except stem.connection.AuthenticationFailure as e:
@@ -217,14 +217,14 @@ class TorTraffic(TorPlugin):
 
             response = controller.get_info('traffic/read', None)
             if response is None:
-                print("Error while reading traffic/read from Tor Deamon", file=sys.stderr)
+                print("Error while reading traffic/read from Tor daemon", file=sys.stderr)
                 sys.exit(-1)
 
             print('read.value {}'.format(response))
 
             response = controller.get_info('traffic/written', None)
             if response is None:
-                print("Error while reading traffic/write from Tor Deamon", file=sys.stderr)
+                print("Error while reading traffic/write from Tor daemon", file=sys.stderr)
                 sys.exit(-1)
             print('written.value {}'.format(response))
 
