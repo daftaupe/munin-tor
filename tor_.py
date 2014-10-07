@@ -97,7 +97,7 @@ class TorPlugin(object):
 
     @staticmethod
     def suggest():
-        options = ['connections', 'traffic', 'dormant', 'bandwidth']
+        options = ['connections', 'traffic', 'dormant', 'bandwidth', 'flags']
         tc = circuits_by_country.TorCountries()
         if tc.available:
             options.append('countries')
@@ -256,6 +256,52 @@ class TorBandwidth(TorPlugin):
             print('bandwidth.value {}'.format(response.observed_bandwidth))
 
 
+class TorFlags(TorPlugin):
+    def __init__(self):
+        pass
+
+    def conf(self):
+        graph = {'title': 'Relay flags',
+                 'args': '-l 0 --base 1000',
+                 'vlabel': 'flags',
+                 'category': 'Tor',
+                 'info': 'Flags active for relay'}
+        labels = {}
+        for flag in stem.Flag:
+            labels[flag] = {'label': flag, 'min': 0, 'max': 1, 'type': 'GAUGE'}
+
+        TorPlugin.conf_from_dict(graph, labels)
+
+    def fetch(self):
+        with gen_controller() as controller:
+            try:
+                authenticate(controller)
+            except stem.connection.AuthenticationFailure as e:
+                print('Authentication failed ({})'.format(e))
+                return
+
+            # Get fingerprint of our own relay to look up the status entry for.
+            # In Stem 1.3.0 and later, get_network_status() will fetch the
+            # relay's own status entry if no argument is provided, so this will
+            # no longer be needed.
+            response = controller.get_info('fingerprint', None)
+            if response is None:
+                print("Error while reading fingerprint from Tor daemon", file=sys.stderr)
+                sys.exit(-1)
+
+            fingerprint = response
+
+            response = controller.get_network_status(fingerprint, None)
+            if response is None:
+                print("Error while getting server descriptor from Tor daemon", file=sys.stderr)
+                sys.exit(-1)
+            for flag in stem.Flag:
+                if flag in response.flags:
+                    print('{}.value 1'.format(flag))
+                else:
+                    print('{}.value 0'.format(flag))
+
+
 def main():
     if len(sys.argv) > 1:
         param = sys.argv[1].lower()
@@ -280,6 +326,8 @@ def main():
             provider = circuits_by_country.TorCountries()
         elif __file__.endswith('_bandwidth'):
             provider = TorBandwidth()
+        elif __file__.endswith('_flags'):
+            provider = TorFlags()
         else:
             print('Unknown plugin name, try "suggest" for a list of possible ones.')
             sys.exit()
