@@ -97,7 +97,7 @@ class TorPlugin(object):
 
     @staticmethod
     def suggest():
-        options = ['connections', 'traffic', 'dormant']
+        options = ['connections', 'traffic', 'dormant', 'bandwidth']
         tc = circuits_by_country.TorCountries()
         if tc.available:
             options.append('countries')
@@ -216,6 +216,46 @@ class TorTraffic(TorPlugin):
             print('written.value {}'.format(response))
 
 
+class TorBandwidth(TorPlugin):
+    def __init__(self):
+        pass
+
+    def conf(self):
+        graph = {'title': 'Observed bandwidth',
+                 'args': '-l 0 --base 1000',
+                 'vlabel': 'bytes/s',
+                 'category': 'Tor',
+                 'info': 'estimated capacity based on usage in bytes/s'}
+        labels = {'bandwidth': {'label': 'bandwidth', 'min': 0, 'type': 'GAUGE'}}
+
+        TorPlugin.conf_from_dict(graph, labels)
+
+    def fetch(self):
+        with gen_controller() as controller:
+            try:
+                authenticate(controller)
+            except stem.connection.AuthenticationFailure as e:
+                print('Authentication failed ({})'.format(e))
+                return
+
+            # Get fingerprint of our own relay to look up the descriptor for.
+            # In Stem 1.3.0 and later, get_server_descriptor() will fetch the
+            # relay's own descriptor if no argument is provided, so this will
+            # no longer be needed.
+            response = controller.get_info('fingerprint', None)
+            if response is None:
+                print("Error while reading fingerprint from Tor daemon", file=sys.stderr)
+                sys.exit(-1)
+
+            fingerprint = response
+
+            response = controller.get_server_descriptor(fingerprint, None)
+            if response is None:
+                print("Error while getting server descriptor from Tor daemon", file=sys.stderr)
+                sys.exit(-1)
+            print('bandwidth.value {}'.format(response.observed_bandwidth))
+
+
 def main():
     if len(sys.argv) > 1:
         param = sys.argv[1].lower()
@@ -238,6 +278,8 @@ def main():
             provider = TorTraffic()
         elif __file__.endswith('_countries'):
             provider = circuits_by_country.TorCountries()
+        elif __file__.endswith('_bandwidth'):
+            provider = TorBandwidth()
         else:
             print('Unknown plugin name, try "suggest" for a list of possible ones.')
             sys.exit()
