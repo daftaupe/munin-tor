@@ -242,12 +242,10 @@ class TorBandwidth(TorPlugin):
             # In Stem 1.3.0 and later, get_server_descriptor() will fetch the
             # relay's own descriptor if no argument is provided, so this will
             # no longer be needed.
-            response = controller.get_info('fingerprint', None)
-            if response is None:
+            fingerprint = controller.get_info('fingerprint', None)
+            if fingerprint is None:
                 print("Error while reading fingerprint from Tor daemon", file=sys.stderr)
                 sys.exit(-1)
-
-            fingerprint = response
 
             response = controller.get_server_descriptor(fingerprint, None)
             if response is None:
@@ -266,9 +264,7 @@ class TorFlags(TorPlugin):
                  'vlabel': 'flags',
                  'category': 'Tor',
                  'info': 'Flags active for relay'}
-        labels = {}
-        for flag in stem.Flag:
-            labels[flag] = {'label': flag, 'min': 0, 'max': 1, 'type': 'GAUGE'}
+        labels = {flag: {'label': flag, 'min': 0, 'max': 1, 'type': 'GAUGE'} for flag in stem.Flag}
 
         TorPlugin.conf_from_dict(graph, labels)
 
@@ -284,12 +280,10 @@ class TorFlags(TorPlugin):
             # In Stem 1.3.0 and later, get_network_status() will fetch the
             # relay's own status entry if no argument is provided, so this will
             # no longer be needed.
-            response = controller.get_info('fingerprint', None)
-            if response is None:
+            fingerprint = controller.get_info('fingerprint', None)
+            if fingerprint is None:
                 print("Error while reading fingerprint from Tor daemon", file=sys.stderr)
                 sys.exit(-1)
-
-            fingerprint = response
 
             response = controller.get_network_status(fingerprint, None)
             if response is None:
