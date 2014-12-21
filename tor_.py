@@ -189,8 +189,8 @@ class TorTraffic(TorPlugin):
                  'vlabel': 'data',
                  'category': 'Tor',
                  'info': 'bytes read/written'}
-        labels = {'read': {'label': 'read', 'min': 0, 'type': 'COUNTER'},
-                  'written': {'label': 'written', 'min': 0, 'type': 'COUNTER'}}
+        labels = {'read': {'label': 'read', 'min': 0, 'type': 'DERIVE'},
+                  'written': {'label': 'written', 'min': 0, 'type': 'DERIVE'}}
 
         TorPlugin.conf_from_dict(graph, labels)
 
