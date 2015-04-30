@@ -52,7 +52,7 @@ def gen_controller():
     connect_method = os.environ.get('connectmethod', 'port')
 
     if connect_method == 'port':
-        return Controller.from_port(port=os.environ.get('port', 9051))
+        return Controller.from_port(int(port=os.environ.get('port', 9051)))
     elif connect_method == 'socket':
         return Controller.from_socket_file(path=os.environ.get('socket', '/var/run/tor/control'))
     else:
