@@ -1,29 +1,21 @@
 #!/usr/bin/python2
 
 from __future__ import print_function
-from collections import Counter
-from stem import CircStatus
-from stem.control import Controller
-#from tor_ import TorPlugin, authenticate, gen_controller
+import collections
+import json
 import os
-import sys
 import stem
 import stem.control
-import argparse
-import json
+import sys
 
+default_torgeoippath = "/usr/share/GeoIP/GeoIP.dat"
+default_torcachefile = 'munin_tor_country_stats.json'
+default_torport = 9051
+default_torsocket = '/var/run/tor/control'
+default_torconnectmethod = 'port'
 
-#try:
-#    import stem
-#    from stem.control import Controller
-#except ImportError:
-#    print('no (tor-munin requires the stem library from https://stem.torproject.org.)')
-#    sys.exit()
-
-
-DEFAULT_GEOIP_PATH = "/usr/share/GeoIP/GeoIP.dat"
-CACHE_FNAME = 'munin_tor_country_stats.json'
-
+#%# family=auto
+#%# capabilities=autoconf suggest
 
 def simplify(cn):
     """Simplify country name"""
@@ -32,31 +24,6 @@ def simplify(cn):
     cn = cn.split(',', 1)[0]
     return cn
 
-def get_info(query, port=9051, socket='/var/run/tor/control', connect_method='port'):
-    if connect_method == 'port':
-        def gen_controller():
-            return stem.control.Controller.from_port(port=port)
-    elif connect_method == 'socket':
-        def gen_controller():
-            return stem.control.Controller.from_socket_file(path=socket)
-    else:
-        raise ValueError("env.connectmethod contains in invalid value. Please specify either 'port' or 'socket'.")
-
-    with gen_controller() as controller:
-        controller.authenticate()
-
-        try:
-            response = controller.get_info(query)
-            print(response)
-        except stem.InvalidArguments as e:
-            print("{}".format(e))
-
-'''
- Here be dragons
-'''
-
-#%# family=auto
-#%# capabilities=autoconf suggest
 
 
 class ConnectionError(Exception):
@@ -87,12 +54,11 @@ def authenticate(controller):
 
 
 def gen_controller():
-    connect_method = os.environ.get('connectmethod', 'port')
-
+    connect_method = os.environ.get('connectmethod', default_torconnectmethod)
     if connect_method == 'port':
-        return Controller.from_port(port=int(os.environ.get('port', 9051)))
+        return stem.control.Controller.from_port(port=int(os.environ.get('port', default_torport)))
     elif connect_method == 'socket':
-        return Controller.from_socket_file(path=os.environ.get('socket', '/var/run/tor/control'))
+        return stem.control.Controller.from_socket_file(path=os.environ.get('socket', default_torsocket))
     else:
         print("env.connectmethod contains an invalid value. Please specify either 'port' or 'socket'.", file=sys.stderr)
         sys.exit(-1)
@@ -136,11 +102,6 @@ class TorPlugin(object):
     @staticmethod
     def suggest():
         options = ['connections', 'traffic', 'dormant', 'bandwidth', 'flags', 'countries']
-        ##tc = circuits_by_country.TorCountries()
-	#TorCountries is always available now, because it is included in the tor_.py file
-        #tc = TorCountries()
-        #if tc.available:
-        #    options.append('countries')
 
         for option in options:
             print(option)
@@ -342,12 +303,12 @@ class TorCountries(TorPlugin):
         self.cache_dir_name = os.environ.get('torcachedir', None)
         if self.cache_dir_name is not None:
             self.cache_dir_name = os.path.join(self.cache_dir_name,
-                                               CACHE_FNAME)
+                                               os.environ.get('torcachefile', default_torcachefile))
 
         max_countries = os.environ.get('tormaxcountries', 15)
         self.max_countries = int(max_countries)
 
-        geoip_path = os.environ.get('torgeoippath', DEFAULT_GEOIP_PATH)
+        geoip_path = os.environ.get('torgeoippath', default_torgeoippath)
         try:
             import GeoIP
             self.geodb = GeoIP.open(geoip_path, GeoIP.GEOIP_MEMORY_CACHE)
@@ -436,7 +397,7 @@ class TorCountries(TorPlugin):
         with gen_controller() as controller:
             try:
                 authenticate(controller)
-                c = Counter(self._gen_countries(controller))
+                c = collections.Counter(self._gen_countries(controller))
                 return sorted(c.most_common(self.max_countries))
             except stem.connection.AuthenticationFailure as e:
                 print('Authentication failed ({})'.format(e))
@@ -482,20 +443,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-#if __name__ == "__main__":
-#    parser = argparse.ArgumentParser()
-#    parser.add_argument("query", type=str,
-#                        help='query parameter for get_info request')
-#    parser.add_argument("-p", "--port", type=int,
-#                        help='set the port used for connecting to tor'
-#                        ' (default: 9051)', default=9051)
-#    parser.add_argument("-s", "--socket", type=str,
-#                        help='set the path to the socket used for connecting to tor (if connectmethod=socket)'
-#                        ' (default: /var/run/tor/control)', default='/var/run/tor/control')
-#    parser.add_argument("-m", "--connectmethod", type=str,
-#                        help='the method used to connect to tor (port or socket)'
-#                        ' (default: port)', default='port')
-#    args = parser.parse_args()
-#
-#    get_info(args.query, args.port, args.socket, args.connectmethod)
