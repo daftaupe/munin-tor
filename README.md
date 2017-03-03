@@ -8,21 +8,29 @@ Requires the stem library (https://stem.torproject.org/).
 Resolve dependencies for example by using pip:
 `pip install -r requirements.txt`
 
+#### tor_bandwidth
+![alt_tor_bandwidth](https://cloud.githubusercontent.com/assets/22810624/23546800/85d9da72-0001-11e7-8577-a1697b14c68b.png)
+`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_bandwidth`
+
 #### tor_connections
 ![alt tor_connections](https://i.imgur.com/LAkcKD0.png)  
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_connections`
 
-#### tor_traffic
-![alt tor_traffic](https://i.imgur.com/YXLZHGa.png)  
-`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_traffic`
+#### tor_countries
+![alt tor_countries](http://i.imgur.com/6bVsHrN.png)  
+`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_countries`
 
 #### tor_dormant
 ![alt tor_dormant](http://i.imgur.com/UCQr6MX.png)  
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_dormant`
 
-#### tor_countries
-![alt tor_countries](http://i.imgur.com/6bVsHrN.png)  
-`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_countries`
+#### tor_flags
+![alt_tor_flags](https://cloud.githubusercontent.com/assets/22810624/23546797/835729b2-0001-11e7-9d25-2b3cae4ace8e.png)
+`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_flags`
+
+#### tor_traffic
+![alt tor_traffic](https://i.imgur.com/YXLZHGa.png)  
+`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_traffic`
 
 #### Using password authentication
 
