@@ -368,6 +368,44 @@ class TorFlags(TorPlugin):
                     print('{}.value 0'.format(flag))
 
 
+class TorRouters(TorPlugin):
+    def __init__(self):
+        pass
+
+    def conf(self):
+        graph = {'title': 'Routers',
+                 'args': '-l 0',
+                 'vlabel': 'routers',
+                 'category': 'Tor',
+                 'info': 'known Tor onion routers'}
+        labels = {'routers': {'label': 'routers', 'min': 0, 'type': 'GAUGE'} }
+                 
+
+        TorPlugin.conf_from_dict(graph, labels)
+
+    def fetch(self):
+        with gen_controller() as controller:
+            try:
+                authenticate(controller)
+            except stem.connection.AuthenticationFailure as e:
+                print('Authentication failed ({})'.format(e))
+                return
+
+
+            response = controller.get_info('ns/all', None)
+            if response is None:
+                print("Error while reading ns/all from Tor daemon", file=sys.stderr)
+                sys.exit(-1)
+            else:
+                routers = response.split('\n')
+	        onr = 0
+		for router in routers:
+		    if router[0] == "r":
+	               onr += 1 
+                
+                print('routers.value {}'.format(onr))
+
+
 class TorTraffic(TorPlugin):
     def __init__(self):
         pass
@@ -434,6 +472,8 @@ def main():
             provider = TorDormant()
         elif __file__.endswith('_flags'):
             provider = TorFlags()
+        elif __file__.endswith('_routers'):
+            provider = TorRouters()
         elif __file__.endswith('_traffic'):
             provider = TorTraffic()
         else:
