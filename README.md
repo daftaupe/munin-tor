@@ -95,7 +95,7 @@ Specify your password in the config file of the plugin
 You can query infos from the tor daemon via its GETINFO¹ command. The get_info.py script helps you to look up the return values/format quickly, to see if the desired information can be efficiently extracted.
 
 #### tor_bandwidth
-![alt tor_bandwidth](https://cloud.githubusercontent.com/assets/22810624/23546800/85d9da72-0001-11e7-8577-a1697b14c68b.png)  
+![alt tor_bandwidth](https://user-images.githubusercontent.com/22810624/27251630-3a5d0bb2-534b-11e7-8ebe-9a78d2d60b1f.png)  
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_bandwidth`
 
 #### tor_connections
@@ -111,7 +111,7 @@ You can query infos from the tor daemon via its GETINFO¹ command. The get_info.
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_dormant`
 
 #### tor_flags
-![alt tor_flags](https://cloud.githubusercontent.com/assets/22810624/23546797/835729b2-0001-11e7-9d25-2b3cae4ace8e.png)  
+![alt tor_flags](https://user-images.githubusercontent.com/22810624/27251631-3a5eb3f4-534b-11e7-9b48-30de5af5fa4a.png)  
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_flags`
 
 #### tor_routers
