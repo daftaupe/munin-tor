@@ -28,6 +28,7 @@ Then you have to copy the files where your munin installation expects them, and 
     $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_countries
     $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_dormant
     $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_flags
+    $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_routers
     $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_traffic
    
 When this is done, you need to configure the way the tor plugin for munin will behave. There are several parameters that can be modified.
@@ -112,6 +113,10 @@ You can query infos from the tor daemon via its GETINFO¹ command. The get_info.
 #### tor_flags
 ![alt tor_flags](https://cloud.githubusercontent.com/assets/22810624/23546797/835729b2-0001-11e7-9d25-2b3cae4ace8e.png)  
 `ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_flags`
+
+#### tor_routers
+![alt tor_routers](https://user-images.githubusercontent.com/22810624/27251632-3a5fd20c-534b-11e7-9009-909799b0b95b.png)  
+`ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_routers`
 
 #### tor_traffic
 ![alt tor_traffic](https://i.imgur.com/YXLZHGa.png)  
