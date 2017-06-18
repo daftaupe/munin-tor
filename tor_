@@ -100,7 +100,7 @@ class TorPlugin(object):
 
     @staticmethod
     def suggest():
-        options = ['connections', 'traffic', 'dormant', 'bandwidth', 'flags', 'countries']
+        options = ['bandwidth', 'connections', 'countries', 'dormant', 'flags', 'routers', 'traffic']
 
         for option in options:
             print(option)
