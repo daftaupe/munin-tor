@@ -18,12 +18,6 @@ default_torconnectmethod = 'port'
 #%# family=auto
 #%# capabilities=autoconf suggest
 
-def simplify(cn):
-    """Simplify country name"""
-    cn = cn.replace(' ', '_')
-    cn = cn.replace("'", '_')
-    cn = cn.split(',', 1)[0]
-    return cn
 
 
 class ConnectionError(Exception):
@@ -252,29 +246,20 @@ class TorCountries(TorPlugin):
         for c, v in countries_num:
             print("%s.value %d" % (c, v))
 
-    # Unused
-    #@staticmethod
-    #def _gen_ipaddrs_from_circuits(controller):
-    #    """Generate a sequence of ipaddrs for every built circuit"""
-    #    # Currently unused
-    #    for circ in controller.get_circuits():
-    #        if circ.status != CircStatus.BUILT:
-    #            continue
-    #
-    #        for entry in circ.path:
-    #            fingerprint, nickname = entry
-    #
-    #            desc = controller.get_network_status(fingerprint, None)
-    #            if desc:
-    #                ipaddr = desc.address
-    #                yield ipaddr
-
     @staticmethod
     def _gen_ipaddrs_from_statuses(controller):
         """Generate a sequence of ipaddrs for every network status"""
         for desc in controller.get_network_statuses():
             ipaddr = desc.address
             yield ipaddr
+
+    @staticmethod
+    def simplify(cn):
+        """Simplify country name"""
+        cn = cn.replace(' ', '_')
+        cn = cn.replace("'", '_')
+        cn = cn.split(',', 1)[0]
+        return cn
 
     def _gen_countries(self, controller):
         """Generate a sequence of countries for every built circuit"""
@@ -284,7 +269,7 @@ class TorCountries(TorPlugin):
                 yield 'Unknown'
                 continue
 
-            yield simplify(country)
+            yield self.simplify(country)
 
     def top_countries(self):
         """Build a list of top countries by number of circuits"""
@@ -315,7 +300,6 @@ class TorDormant(TorPlugin):
     def fetch(self):
         with gen_controller() as controller:
             try:
-                #controller.authenticate()
                 authenticate(controller)
 
                 response = controller.get_info('dormant', None)
