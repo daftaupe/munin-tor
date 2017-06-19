@@ -123,7 +123,7 @@ class TorBandwidth(TorPlugin):
         graph = {'title': 'Observed bandwidth',
                  'args': '-l 0 --base 1000',
                  'vlabel': 'bytes/s',
-                 'category': 'Tor',
+                 'category': 'network',
                  'info': 'estimated capacity based on usage in bytes/s'}
         labels = {'bandwidth': {'label': 'bandwidth', 'min': 0, 'type': 'GAUGE'}}
 
@@ -161,7 +161,7 @@ class TorConnections(TorPlugin):
         graph = {'title': 'Connections',
                  'args': '-l 0 --base 1000',
                  'vlabel': 'connections',
-                 'category': 'Tor',
+                 'category': 'network',
                  'info': 'OR connections by state'}
         labels = {'new': {'label': 'new', 'min': 0, 'max': 25000, 'type': 'GAUGE'},
                   'launched': {'label': 'launched', 'min': 0, 'max': 25000, 'type': 'GAUGE'},
@@ -218,7 +218,7 @@ class TorCountries(TorPlugin):
         graph = {'title': 'Countries',
                  'args': '-l 0 --base 1000',
                  'vlabel': 'countries',
-                 'category': 'Tor',
+                 'category': 'network',
                  'info': 'OR connections by state'}
         labels = {}
 
@@ -306,7 +306,7 @@ class TorDormant(TorPlugin):
         graph = {'title': 'Dormant',
                  'args': '-l 0 --base 1000',
                  'vlabel': 'dormant',
-                 'category': 'Tor',
+                 'category': 'network',
                  'info': 'Is Tor not building circuits because it is idle?'}
         labels = {'dormant': {'label': 'dormant', 'min': 0, 'max': 1, 'type': 'GAUGE'}}
 
@@ -335,7 +335,7 @@ class TorFlags(TorPlugin):
         graph = {'title': 'Relay flags',
                  'args': '-l 0 --base 1000',
                  'vlabel': 'flags',
-                 'category': 'Tor',
+                 'category': 'network',
                  'info': 'Flags active for relay'}
         labels = {flag: {'label': flag, 'min': 0, 'max': 1, 'type': 'GAUGE'} for flag in stem.Flag}
 
@@ -377,7 +377,7 @@ class TorRouters(TorPlugin):
         graph = {'title': 'Routers',
                  'args': '-l 0',
                  'vlabel': 'routers',
-                 'category': 'Tor',
+                 'category': 'network',
                  'info': 'known Tor onion routers'}
         labels = {'routers': {'label': 'routers', 'min': 0, 'type': 'GAUGE'} }
                  
@@ -415,7 +415,7 @@ class TorTraffic(TorPlugin):
         graph = {'title': 'Traffic',
                  'args': '-l 0 --base 1024',
                  'vlabel': 'data',
-                 'category': 'Tor',
+                 'category': 'network',
                  'info': 'bytes read/written'}
         labels = {'read': {'label': 'read', 'min': 0, 'type': 'DERIVE'},
                   'written': {'label': 'written', 'min': 0, 'type': 'DERIVE'}}
