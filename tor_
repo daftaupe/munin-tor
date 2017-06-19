@@ -10,11 +10,12 @@ import stem
 import stem.control
 import stem.connection
 
-default_torgeoippath = "/usr/share/GeoIP/GeoIP.dat"
 default_torcachefile = 'munin_tor_country_stats.json'
+default_torconnectmethod = 'port'
+default_torgeoippath = "/usr/share/GeoIP/GeoIP.dat"
+default_tormaxcountries = 15
 default_torport = 9051
 default_torsocket = '/var/run/tor/control'
-default_torconnectmethod = 'port'
 
 #%# family=auto
 #%# capabilities=autoconf suggest
@@ -49,13 +50,13 @@ def authenticate(controller):
 
 
 def gen_controller():
-    connect_method = os.environ.get('connectmethod', default_torconnectmethod)
+    connect_method = os.environ.get('torconnectmethod', default_torconnectmethod)
     if connect_method == 'port':
-        return stem.control.Controller.from_port(port=int(os.environ.get('port', default_torport)))
+        return stem.control.Controller.from_port(port=int(os.environ.get('torport', default_torport)))
     elif connect_method == 'socket':
-        return stem.control.Controller.from_socket_file(path=os.environ.get('socket', default_torsocket))
+        return stem.control.Controller.from_socket_file(path=os.environ.get('torsocket', default_torsocket))
     else:
-        print("env.connectmethod contains an invalid value. Please specify either 'port' or 'socket'.", file=sys.stderr)
+        print("env.torconnectmethod contains an invalid value. Please specify either 'port' or 'socket'.", file=sys.stderr)
         sys.exit(1)
 
 
@@ -194,7 +195,7 @@ class TorCountries(TorPlugin):
             self.cache_dir_name = os.path.join(self.cache_dir_name,
                                                os.environ.get('torcachefile', default_torcachefile))
 
-        max_countries = os.environ.get('tormaxcountries', 15)
+        max_countries = os.environ.get('tormaxcountries', default_tormaxcountries)
         self.max_countries = int(max_countries)
 
         geoip_path = os.environ.get('torgeoippath', default_torgeoippath)
