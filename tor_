@@ -4,9 +4,10 @@ from __future__ import print_function
 import collections
 import json
 import os
+import sys
+
 import stem
 import stem.control
-import sys
 
 default_torgeoippath = "/usr/share/GeoIP/GeoIP.dat"
 default_torcachefile = 'munin_tor_country_stats.json'
