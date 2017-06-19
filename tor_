@@ -8,6 +8,7 @@ import sys
 
 import stem
 import stem.control
+import stem.connection
 
 default_torgeoippath = "/usr/share/GeoIP/GeoIP.dat"
 default_torcachefile = 'munin_tor_country_stats.json'
