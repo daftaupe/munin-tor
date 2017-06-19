@@ -61,7 +61,7 @@ def gen_controller():
         return stem.control.Controller.from_socket_file(path=os.environ.get('socket', default_torsocket))
     else:
         print("env.connectmethod contains an invalid value. Please specify either 'port' or 'socket'.", file=sys.stderr)
-        sys.exit(-1)
+        sys.exit(1)
 
 
 #########################
@@ -144,12 +144,12 @@ class TorBandwidth(TorPlugin):
             fingerprint = controller.get_info('fingerprint', None)
             if fingerprint is None:
                 print("Error while reading fingerprint from Tor daemon", file=sys.stderr)
-                sys.exit(-1)
+                sys.exit(1)
 
             response = controller.get_server_descriptor(fingerprint, None)
             if response is None:
                 print("Error while getting server descriptor from Tor daemon", file=sys.stderr)
-                sys.exit(-1)
+                sys.exit(1)
             print('bandwidth.value {}'.format(response.observed_bandwidth))
 
 
@@ -179,7 +179,7 @@ class TorConnections(TorPlugin):
                 response = controller.get_info('orconn-status', None)
                 if response is None:
                     print("No response from Tor daemon in TorConnection.fetch()", file=sys.stderr)
-                    sys.exit(-1)
+                    sys.exit(1)
                 else:
                     connections = response.split('\n')
                     states = dict((state, 0) for state in stem.ORStatus)
@@ -321,7 +321,7 @@ class TorDormant(TorPlugin):
                 response = controller.get_info('dormant', None)
                 if response is None:
                     print("Error while reading dormant state from Tor daemon", file=sys.stderr)
-                    sys.exit(-1)
+                    sys.exit(1)
                 print('dormant.value {}'.format(response))
             except stem.connection.AuthenticationFailure as e:
                 print('Authentication failed ({})'.format(e))
@@ -356,12 +356,12 @@ class TorFlags(TorPlugin):
             fingerprint = controller.get_info('fingerprint', None)
             if fingerprint is None:
                 print("Error while reading fingerprint from Tor daemon", file=sys.stderr)
-                sys.exit(-1)
+                sys.exit(1)
 
             response = controller.get_network_status(fingerprint, None)
             if response is None:
                 print("Error while getting server descriptor from Tor daemon", file=sys.stderr)
-                sys.exit(-1)
+                sys.exit(1)
             for flag in stem.Flag:
                 if flag in response.flags:
                     print('{}.value 1'.format(flag))
@@ -396,7 +396,7 @@ class TorRouters(TorPlugin):
             response = controller.get_info('ns/all', None)
             if response is None:
                 print("Error while reading ns/all from Tor daemon", file=sys.stderr)
-                sys.exit(-1)
+                sys.exit(1)
             else:
                 routers = response.split('\n')
 	        onr = 0
@@ -433,14 +433,14 @@ class TorTraffic(TorPlugin):
             response = controller.get_info('traffic/read', None)
             if response is None:
                 print("Error while reading traffic/read from Tor daemon", file=sys.stderr)
-                sys.exit(-1)
+                sys.exit(1)
 
             print('read.value {}'.format(response))
 
             response = controller.get_info('traffic/written', None)
             if response is None:
                 print("Error while reading traffic/write from Tor daemon", file=sys.stderr)
-                sys.exit(-1)
+                sys.exit(1)
             print('written.value {}'.format(response))
 
 
