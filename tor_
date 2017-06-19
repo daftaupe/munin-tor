@@ -44,7 +44,7 @@ def authenticate(controller):
     try:
         controller.authenticate(password=password)
     except stem.connection.PasswordAuthFailed:
-        print("Authentication failed (incorrect password)")
+        print("Authentication failed (incorrect password)", file=sys.stderr)
 
 
 def gen_controller():
@@ -462,15 +462,16 @@ def main():
         elif __file__.endswith('_traffic'):
             provider = TorTraffic()
         else:
-            print('Unknown plugin name, try "suggest" for a list of possible ones.')
-            sys.exit()
+            print('Unknown plugin name, try "suggest" for a list of possible ones.', file=sys.stderr)
+            sys.exit(1)
 
         if param == 'config':
             provider.conf()
         elif param == 'fetch':
             provider.fetch()
         else:
-            print('Unknown parameter "{}"'.format(param))
+            print('Unknown parameter "{}"'.format(param), file=sys.stderr)
+	    sys.exit(1)
 
 if __name__ == '__main__':
     main()
