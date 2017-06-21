@@ -6,6 +6,7 @@ import json
 import os
 import sys
 
+import GeoIP
 import stem
 import stem.control
 import stem.connection
@@ -86,6 +87,12 @@ class TorPlugin(object):
     def autoconf():
         try:
             import stem
+
+        except ImportError as e:
+            print('no ({})'.format(e))
+
+        try:
+            import GeoIP 
 
         except ImportError as e:
             print('no ({})'.format(e))
@@ -205,17 +212,10 @@ class TorCountries(TorPlugin):
         self.max_countries = int(max_countries)
 
         geoip_path = os.environ.get('torgeoippath', default_torgeoippath)
-        try:
-            import GeoIP
-            self.geodb = GeoIP.open(geoip_path, GeoIP.GEOIP_MEMORY_CACHE)
-            self.available = True
-        except Exception:
-            self.available = False
+        self.geodb = GeoIP.open(geoip_path, GeoIP.GEOIP_MEMORY_CACHE)
 
     def conf(self):
         """Configure plugin"""
-        if not self.available:
-            return
 
         graph = {'title': 'Countries',
                  'args': '-l 0 --base 1000',
@@ -240,9 +240,6 @@ class TorCountries(TorPlugin):
         """Generate metrics"""
 
         # If possible, read cached data instead of doing the processing twice
-        if not self.available:
-            return
-
         try:
             with open(self.cache_dir_name) as f:
                 countries_num = json.load(f)
