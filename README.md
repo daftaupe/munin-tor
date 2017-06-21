@@ -36,7 +36,7 @@ In order to do this you have to create a file in /etc/munin/plugin-conf.d/tor or
 
     $ cat /etc/munin/plugin-conf.d/tor
     [tor_*]
-    env.user toranon
+    user toranon
     env.torpassword mypassword
     env.torcachedir /tmp
 
@@ -67,12 +67,12 @@ env.connectmethod to 'socket'. The default path for the socket file is
 So basically either you have :
     
     # if you need to change the regular Tor port
-    env.port 9052 
+    env.torport 9052 
 
     # if you need to connect via a socket
-    env.connectmethod socket
+    env.torconnectmethod socket
     # if you need to change the socket path
-    env.socket /var/run/tor/changedcontrol
+    env.torsocket /var/run/tor/changedcontrol
 
 #### Using password authentication
 
