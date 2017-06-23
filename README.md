@@ -3,7 +3,7 @@ munin-tor
 
 ## Description
 
-Munin plugin to render various values taken from the a tor daemon.
+Munin plugin for Tor.
 
 ## Requirements
 
@@ -16,11 +16,11 @@ Resolve dependencies for example by using pip:
 
 First you have to clone the repository somewhere.
 
-    $ cd /somewhere && git clone https://github.com/daftaupe/munin-plugins-tor.git
+    $ cd /somewhere && git clone https://github.com/daftaupe/munin-tor.git
     
 Then you have to copy the files where your munin installation expects them, and finally "activate them".
 
-    $ cd /somewhere/munin-plugins-tor
+    $ cd /somewhere/munin-tor
     $ # On CentOS for example
     $ cp tor_ /usr/share/munin/plugins
     $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_bandwidth
@@ -40,7 +40,7 @@ In order to do this you have to create a file in /etc/munin/plugin-conf.d/tor or
     env.torpassword mypassword
     env.torcachedir /tmp
 
-When this is configured as required you can test the plugin that the plugin is working the way it should with the following command :
+When this is configured as required you can test that the plugin is working the way it should with the following command :
 
     # In order to test tor_connections, adapt to the desired plugin.
     $ munin-run tor_connections
