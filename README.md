@@ -23,13 +23,13 @@ Then you have to copy the files where your munin installation expects them, and 
     $ cd /somewhere/munin-tor
     $ # On CentOS for example
     $ cp tor_ /usr/share/munin/plugins
-    $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_bandwidth
-    $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_connections
-    $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_countries
-    $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_dormant
-    $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_flags
-    $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_routers
-    $ ln -s /usr/share/munin/tor_ /etc/munin/plugins/tor_traffic
+    $ ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_bandwidth
+    $ ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_connections
+    $ ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_countries
+    $ ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_dormant
+    $ ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_flags
+    $ ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_routers
+    $ ln -s /usr/share/munin/plugins/tor_ /etc/munin/plugins/tor_traffic
    
 When this is done, you need to configure the way the tor plugin for munin will behave. There are several parameters that can be modified.
 In order to do this you have to create a file in /etc/munin/plugin-conf.d/tor or the equivalent location on your system. It has to be filled in this way.
